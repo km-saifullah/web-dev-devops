@@ -7,6 +7,22 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// server health check
+app.get("/health", async (req, res) => {
+  try {
+    return res.status(200).json({
+      status: true,
+      message: " Server is running perfectly...!",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      status: false,
+      message: "Server is not running",
+      data: error.message,
+    });
+  }
+});
+
 // bookmark routes
 app.use("/", bookmarkRouter);
 
