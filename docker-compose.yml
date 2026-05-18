@@ -1,18 +1,14 @@
-version: "3.9"
-
 services:
   mongodb:
     image: mongo:7
+
     container_name: bookmark_db
 
-    restart: unless-stopped
+    restart: always
 
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-
-    ports:
-      - "27017:27017"
 
     volumes:
       - mongodb_data:/data/db
@@ -25,12 +21,7 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    container_name: bookmark_api
-
-    restart: unless-stopped
-
-    ports:
-      - "8000:8000"
+    restart: always
 
     env_file:
       - .env
@@ -38,12 +29,55 @@ services:
     depends_on:
       - mongodb
 
-    volumes:
-      - .:/app
-      - /app/node_modules
+    deploy:
+      replicas: 4
 
     networks:
       - app_network
+
+  nginx:
+    image: nginx:latest
+
+    container_name: nginx_proxy
+
+    restart: always
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+    depends_on:
+      - backend
+
+    networks:
+      - app_network
+
+  # prometheus:
+  #   image: prom/prometheuss
+
+  #   container_name: prometheus
+
+  #   ports:
+  #     - "9090:9090"
+
+  #   volumes:
+  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  #   networks:
+  #     - app_network
+
+  # grafana:
+  #   image: grafana/grafana
+
+  #   container_name: grafana
+
+  #   ports:
+  #     - "3000:3000"
+
+  #   networks:
+  #     - app_network
 
 volumes:
   mongodb_data:
