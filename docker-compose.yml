@@ -29,8 +29,8 @@ services:
     depends_on:
       - mongodb
 
-    deploy:
-      replicas: 4
+    # deploy:
+    #   replicas: 4
 
     networks:
       - app_network
@@ -54,30 +54,30 @@ services:
     networks:
       - app_network
 
-  # prometheus:
-  #   image: prom/prometheuss
+  prometheus:
+    image: prom/prometheus
 
-  #   container_name: prometheus
+    container_name: prometheus
 
-  #   ports:
-  #     - "9090:9090"
+    ports:
+      - "9090:9090"
 
-  #   volumes:
-  #     - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
 
-  #   networks:
-  #     - app_network
+    networks:
+      - app_network
 
-  # grafana:
-  #   image: grafana/grafana
+  grafana:
+    image: grafana/grafana
 
-  #   container_name: grafana
+    container_name: grafana
 
-  #   ports:
-  #     - "3000:3000"
+    ports:
+      - "3000:3000"
 
-  #   networks:
-  #     - app_network
+    networks:
+      - app_network
 
 volumes:
   mongodb_data:

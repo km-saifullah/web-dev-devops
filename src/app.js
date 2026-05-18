@@ -1,5 +1,9 @@
 import express from "express";
 import bookmarkRouter from "./routes/bookmark.routes.js";
+import {
+  client,
+  httpRequestDurationMicroseconds,
+} from "./middlewares/metricsMiddleware.js";
 
 const app = express();
 
@@ -25,5 +29,26 @@ app.get("/health", async (req, res) => {
 
 // bookmark routes
 app.use("/", bookmarkRouter);
+
+// add metrics route
+app.get("/metrics", async (req, res) => {
+  res.set("Content-Type", client.register.contentType);
+
+  res.end(await client.register.metrics());
+});
+
+app.use((req, res, next) => {
+  const start = Date.now();
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+
+    httpRequestDurationMicroseconds
+      .labels(req.method, req.route ? req.route.path : req.path, res.statusCode)
+      .observe(duration);
+  });
+
+  next();
+});
 
 export default app;
