@@ -116,6 +116,7 @@ Prometheus → Docker Container
 ## Deployment Process
 
 ![Deployment Process](./images/Deployment_flow.png)
+
 Deployment Process:
 
 1. Push the code to the github
